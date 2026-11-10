@@ -13,6 +13,7 @@ def exebir_menu():
     print('=' * 30)
 
 def main():
+    # cadastro_em_massa()     # [IMPORTANTE] Executa o cadastro em massa apenas uma vez, na primeira execução do programa.
     criar_banco()
     if not criar_banco():
         print('Falha na criação do banco de dados. Encerrando o sistema...')
