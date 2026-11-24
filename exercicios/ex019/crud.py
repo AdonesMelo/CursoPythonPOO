@@ -108,8 +108,42 @@ def atualizar_pessoa() -> bool:
     pass
 
 def excluir_pessoa() -> bool:
-    pass
+    print('\n======= EXCLUIR PESSOA =======')
+    lista = listar_pessoas()
+    if not lista:
+        return False
 
+    entrada_cod = input('\nDigite o código da pessoa que deseja excluir: ').strip()
+    if not entrada_cod.isdigit():
+        print('[ERRO] Nenhum código foi informado!')
+        return False
+    vcod = int(entrada_cod)
+
+    try:
+        with sqlite3.connect(NOME_BANCO) as db:
+            cur = db.cursor()
+            cur.execute('SELECT nome, altura FROM pessoas WHERE cod = ?;', (vcod,))
+            pessoa = cur.fetchone()
+            if not pessoa:
+                print(f'\n[ERRO] Nenhuma pessoa encontrada com o código "{vcod}".')
+                return False
+
+            vnome, valtura = pessoa
+            print(f'\nEncontrei registro {vnome} com {valtura:.2f}m de altura.')
+
+            conf = input('Deseja realmente excluir esta pessoa? [S/N]: ').strip().upper()
+            if conf != 'S':
+                print('\n[AVISO] Exclusão cancelada pelo usuário.')
+                return True
+
+            cur.execute('DELETE FROM pessoas WHERE cod = ?;', (vcod,))
+            print(f'\n[SUCESSO] Pessoa "{vnome}" excluída com sucesso!')
+            return True
+            
+    except sqlite3.Error as erro:
+        print(f'Falha ao buscar pessoa para exclusão: {erro}')
+        return False
+        
 def buscar_por_nome() -> bool:
     print('\n======= BUSCAR PESSOA POR NOME =======')
 
