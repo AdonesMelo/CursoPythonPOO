@@ -76,7 +76,33 @@ def cadastrar_pessoa() -> bool:
         return False
 
 def listar_pessoas() -> bool:
-    pass
+    print('\n======= LISTA DE PESSOAS CADASTRADAS =======')
+    try:
+        with sqlite3.connect(NOME_BANCO) as db:
+            cur = db.cursor()
+            cur.execute('SELECT cod, nome, altura FROM pessoas ORDER BY nome;')
+            primeiros_registros = cur.fetchone()
+            if not primeiros_registros:
+                print('\n[AVISO] Nenhuma pessoa cadastrada!')
+                return True
+
+            print('\n' + '=' * 45)
+            print(f'{"COD":<6} {"NOME":<28} {"ALTURA":>8}')
+            print('-' * 45)
+
+            vcod, vnome, valtura = primeiros_registros
+            print(f'{vcod:<6} {vnome:<28} {valtura:>8.2f}m')
+
+            for vcod, vnome, valtura in cur:
+                print(f'{vcod:<6} {vnome:<28} {valtura:>8.2f}m')
+
+            print('=' * 45)
+
+            return True
+
+    except sqlite3.Error as erro:
+        print(f'Falha ao listar pessoas: {erro}')
+        return False
 
 def atualizar_pessoa() -> bool:
     pass
@@ -85,4 +111,36 @@ def excluir_pessoa() -> bool:
     pass
 
 def buscar_por_nome() -> bool:
-    pass
+    print('\n======= BUSCAR PESSOA POR NOME =======')
+
+    termo = input('Digite o nome(ou parte dele para busca): ')
+    if not termo:
+        print('[AVISO] Nenhum termo foi informado!')
+        return False
+
+    try:
+        with sqlite3.connect(NOME_BANCO) as db:
+            cur = db.cursor()
+            cur.execute('SELECT cod, nome, altura FROM pessoas WHERE nome LIKE ? ORDER BY nome;', (f'%{termo}%',))
+
+            busca = cur.fetchone()
+            if not busca:
+                print(f'\n[AVISO] Nenhuma pessoa encontrada com o nome "{termo}".')
+                return True
+
+            print('\n' + '=' * 45)
+            print(f'{"COD":<6} {"NOME":<28} {"ALTURA":>8}')
+            print('-' * 45)
+
+            vcod, vnome, valtura = busca
+            print(f'{vcod:<6} {vnome:<28} {valtura:>8.2f}m')
+
+            for vcod, vnome, valtura in cur:
+                print(f'{vcod:<6} {vnome:<28} {valtura:>8.2f}m')
+
+            print('=' * 45)
+        return True
+
+    except sqlite3.Error as erro:
+        print(f'Falha ao buscar pessoa por nome: {erro}')
+        return False

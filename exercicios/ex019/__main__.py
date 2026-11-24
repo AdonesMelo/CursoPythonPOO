@@ -44,7 +44,7 @@ def main():
                     print('[ERRO] nao foi possivel buscar a pessoa.')
 
             case '0': # Sair
-                print('\nEncerrando o Sistema...')
+                print('\nEncerrando o Sistema...\n')
                 break
             case _:
                 print('\n[ERRO] Opção inválida! Escolha uma valor entre 0 e 5.')
